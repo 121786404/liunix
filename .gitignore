@@ -1,0 +1,14 @@
+# Object files
+*.o
+
+# Executables
+*.bin
+*.out
+*.sym
+*.img
+*.asm
+bootblock
+
+
+si/*
+bin/*
