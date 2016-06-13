@@ -1,0 +1,7 @@
+file boot/bootblock.o
+target remote :1234
+x /i $cs*16+$eip
+break *0x7c00
+layout asm
+layout regs
+c

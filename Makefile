@@ -61,14 +61,19 @@ qemu: bin/LiuOS.img
 debug: bin/LiuOS.img
 	qemu-system-i386 -S -s -parallel stdio -hda $< -serial null &
 	sleep 2
-	gnome-terminal -e "gdb -q -x tools/gdbinit"
+	gnome-terminal -e "gdb -q -tui -x tools/gdbinit_kernel"
 
+.PHONY:debug_boot
+debug_boot: bin/LiuOS.img
+	qemu-system-i386 -S -s -parallel stdio -hda $< -serial null &
+	sleep 2
+	gnome-terminal -e "gdb -q -x tools/gdbinit_boot"
 
-
-
-
-
-
+.PHONY:debug_mon
+debug_mon: bin/LiuOS.img
+	gnome-terminal -e "qemu-system-i386 -S -s -d in_asm -D bin/q.log -monitor stdio -hda $< -serial null"
+	sleep 2
+	gnome-terminal -e "gdb -q -tui -x tools/gdbinit_kernel"
 
 
 

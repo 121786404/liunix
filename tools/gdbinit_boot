@@ -1,0 +1,111 @@
+file boot/bootblock.o
+target remote :1234
+x /i $cs*16+$eip
+break *0x7c00
+c
+
+#set confirm off
+#set verbose off
+#set output-radix 0d10
+#set input-radix 0d10
+
+# These make gdb never pause in its output
+#set height 0
+#set width 0
+
+# Real mode
+set architecture i8086
+
+set $SHOW_CONTEXT = 1
+
+# nb of instructions to display
+set $CODE_SIZE = 5
+
+define compute_regs
+  set $cs_ip = ((unsigned short)$cs<<4)+(unsigned short)$eip
+	set $ss_sp = ((unsigned short)$ss<<4)+(unsigned short)$sp
+	set $ss_bp = ((unsigned short)$ss<<4)+(unsigned short)$bp
+end
+
+define print_regs
+  printf "AX: %04X BX: %04X ", $ax, $bx
+  printf "CX: %04X DX: %04X\n", $cx, $dx
+  printf "SI: %04X DI: %04X ", $si, $di
+  printf "SP: %04X BP: %04X\n", $sp, $bp
+  printf "CS: %04X DS: %04X ", $cs, $ds
+  printf "ES: %04X SS: %04X\n", $es, $ss
+  printf "EIP:%08X\n", $eip
+  printf "CS:IP: %04X:%04X (0x%05X)\n", $cs, $eip, $cs_ip
+  printf "SS:SP: %04X:%04X (0x%05X)\n", $ss, $sp,  $ss_sp
+  printf "SS:BP: %04X:%04X (0x%05X)\n", $ss, $bp,  $ss_bp
+end
+
+define print_eflags
+    printf "OF <%d>  DF <%d>  IF <%d>  TF <%d>",\
+           (($eflags >> 0xB) & 1), (($eflags >> 0xA) & 1), \
+           (($eflags >> 9) & 1), (($eflags >> 8) & 1)
+    printf "  SF <%d>  ZF <%d>  AF <%d>  PF <%d>  CF <%d>\n",\
+           (($eflags >> 7) & 1), (($eflags >> 6) & 1),\
+           (($eflags >> 4) & 1), (($eflags >> 2) & 1), ($eflags & 1)
+    printf "ID <%d>  VIP <%d> VIF <%d> AC <%d>",\
+           (($eflags >> 0x15) & 1), (($eflags >> 0x14) & 1), \
+           (($eflags >> 0x13) & 1), (($eflags >> 0x12) & 1)
+    printf "  VM <%d>  RF <%d>  NT <%d>  IOPL <%d>\n",\
+           (($eflags >> 0x11) & 1), (($eflags >> 0x10) & 1),\
+           (($eflags >> 0xE) & 1), (($eflags >> 0xC) & 3)
+end
+
+# dump content of memory in words
+# arg0 : addr
+# arg1 : nb of words
+define _dump_memw
+  if $argc < 2
+    printf "Arguments: address number_of_words\n"
+  else
+    set $_nb = $arg1
+    set $_i = 0
+    set $_addr = $arg0
+    while ($_i < $_nb)
+      printf "%04X ", *((unsigned short*)$_addr + $_i)
+      set $_i++
+    end
+  end
+end
+
+
+define context
+  printf "---------------------------[ STACK ]---\n"
+  _dump_memw $ss_sp 8
+  printf "\n"
+  set $_a = $ss_sp + 16
+  _dump_memw $_a 8
+  printf "\n"
+
+  printf "----------------------------[ CPU ]----\n"
+  print_regs
+  print_eflags
+  printf "---------------------------[ CODE ]----\n"
+
+  set $_code_size = $CODE_SIZE
+
+  # disassemble
+  # first call x/i with an address
+  # subsequent calls to x/i will increment address
+  if ($_code_size > 0)
+    x /i $cs_ip
+    set $_code_size--
+  end
+  while ($_code_size > 0)
+    x /i
+    set $_code_size--
+  end
+end
+
+
+define hook-stop
+	compute_regs
+  if ($SHOW_CONTEXT > 0)
+    context
+  end
+end
+
