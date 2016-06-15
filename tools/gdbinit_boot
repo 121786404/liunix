@@ -1,7 +1,7 @@
 file boot/bootblock.o
 target remote :1234
-x /i $cs*16+$eip
-break *0x7c00
+#x /i $cs*16+$eip
+break bootmain
 c
 
 #set confirm off
@@ -14,9 +14,9 @@ c
 #set width 0
 
 # Real mode
-set architecture i8086
+#set architecture i8086
 
-set $SHOW_CONTEXT = 1
+set $SHOW_CONTEXT = 0
 
 # nb of instructions to display
 set $CODE_SIZE = 5

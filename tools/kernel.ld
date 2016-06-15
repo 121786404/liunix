@@ -9,6 +9,8 @@ SECTIONS {
 	/* Load the kernel at this address: "." means the current address */
 	. = 0x100000;
 
+	.init : {kern/init/init.o}
+
 	.text : {
 		*(.text .stub .text.* .gnu.linkonce.t.*)
 	}
