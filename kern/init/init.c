@@ -18,15 +18,13 @@ kern_init(void){
 
     cons_init();                // init the console
 
-    const char *message = "liunix is loading ...";
-    cprintf("%s\n\n", message);
-
+    cprintf("%s\n\n", "liunix is loading ...");
     cprintf("Special kernel symbols:\n");
     cprintf("  entry  0x%08x (phys)\n", kern_init);
     cprintf("  etext  0x%08x (phys)\n", &etext);
     cprintf("  edata  0x%08x (phys)\n", &edata);
     cprintf("  end    0x%08x (phys)\n", &end);
-    cprintf("Kernel executable memory footprint: %dKB\n", (&end - (char*)kern_init + 1023)/1024);
+    cprintf("Kernel executable memory footprint: %dKB\n\n", (&end - (char*)kern_init + 1023)/1024);
 
     pmm_init();                 // init physical memory management
 

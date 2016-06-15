@@ -12,7 +12,7 @@ LIB_OBJECTS = $(patsubst %.c, %.o, $(LIB_SOURCES))
 CC = gcc
 LD = ld
 
-CFLAGS := -c -Wall -m32 -ggdb -gstabs -nostdinc -fno-builtin -fno-stack-protector -Os
+CFLAGS := -c -Wall -MD -m32 -ggdb -gstabs -nostdinc -fno-builtin -fno-stack-protector -Os
 INCLUDE	+= boot libs kern/debug kern/driver kern/mm kern/trap
 CFLAGS	+= $(addprefix -I,$(INCLUDE))
 
@@ -31,22 +31,22 @@ obj/bootblock.o: obj/boot/bootasm.o obj/boot/bootmain.o
 
 link:
 	@mkdir -p bin
-	$(LD) $(LDFLAGS) -N -e start -Ttext 0x7C00 boot/bootasm.o boot/bootmain.o -o boot/bootblock.o
-	objdump -t boot/bootblock.o | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > boot/bootblock.sym
-	objdump -S boot/bootblock.o > boot/bootblock.asm
+	$(LD) $(LDFLAGS) -N -e start -Ttext 0x7C00 boot/bootasm.o boot/bootmain.o -o bin/bootblock.o
+	objdump -t bin/bootblock.o | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > bin/bootblock.sym
+	objdump -S bin/bootblock.o > bin/bootblock.asm
 	$(LD) $(LDFLAGS) -T tools/kernel.ld $(KERNEL_OBJECTS) $(LIB_OBJECTS) -o bin/kernel
 	objdump -S bin/kernel > bin/kernel.asm
 
 .PHONY:clean
 clean:
-	rm -Rf bin $(shell find . -name *.asm -or -name *.o -or -name *.sym -or -name *.out -or -name *.img)
+	rm -Rf bin $(shell find . -name *.asm -or -name *.o -or -name *.d -or -name *.sym -or -name *.out -or -name *.img)
 
 
 .PHONY:update_image
 update_image:
 	@mkdir -p bin
-	objcopy -S -R .note -R .comment -R .eh_frame -O binary boot/bootblock.o boot/bootblock.out
-	tools/sign boot/bootblock.out bin/bootblock
+	objcopy -S -R .note -R .comment -R .eh_frame -O binary bin/bootblock.o bin/bootblock.out
+	tools/sign bin/bootblock.out bin/bootblock
 	dd if=/dev/zero of=bin/liunix.img count=10000
 	dd if=bin/bootblock of=bin/liunix.img conv=notrunc
 	dd if=bin/kernel of=bin/liunix.img seek=1 conv=notrunc
