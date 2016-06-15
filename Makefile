@@ -35,7 +35,7 @@ link:
 	objdump -t boot/bootblock.o | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > boot/bootblock.sym
 	objdump -S boot/bootblock.o > boot/bootblock.asm
 	$(LD) $(LDFLAGS) -T tools/kernel.ld $(KERNEL_OBJECTS) $(LIB_OBJECTS) -o bin/kernel
-
+	objdump -S bin/kernel > bin/kernel.asm
 
 .PHONY:clean
 clean:
@@ -47,30 +47,30 @@ update_image:
 	@mkdir -p bin
 	objcopy -S -R .note -R .comment -R .eh_frame -O binary boot/bootblock.o boot/bootblock.out
 	tools/sign boot/bootblock.out bin/bootblock
-	dd if=/dev/zero of=bin/LiuOS.img count=10000
-	dd if=bin/bootblock of=bin/LiuOS.img conv=notrunc
-	dd if=bin/kernel of=bin/LiuOS.img seek=1 conv=notrunc
+	dd if=/dev/zero of=bin/liunix.img count=10000
+	dd if=bin/bootblock of=bin/liunix.img conv=notrunc
+	dd if=bin/kernel of=bin/liunix.img seek=1 conv=notrunc
 
 
 .PHONY:qemu
-qemu: bin/LiuOS.img
+qemu: bin/liunix.img
 	qemu-system-i386 -parallel stdio -hda $< -serial null
 
 
 .PHONY:debug
-debug: bin/LiuOS.img
+debug: bin/liunix.img
 	qemu-system-i386 -S -s -parallel stdio -hda $< -serial null &
 	sleep 2
 	gnome-terminal -e "gdb -q -tui -x tools/gdbinit_kernel"
 
 .PHONY:debug_boot
-debug_boot: bin/LiuOS.img
+debug_boot: bin/liunix.img
 	qemu-system-i386 -S -s -parallel stdio -hda $< -serial null &
 	sleep 2
 	gnome-terminal -e "gdb -q -x tools/gdbinit_boot"
 
 .PHONY:debug_mon
-debug_mon: bin/LiuOS.img
+debug_mon: bin/liunix.img
 	gnome-terminal -e "qemu-system-i386 -S -s -d in_asm -D bin/q.log -monitor stdio -hda $< -serial null"
 	sleep 2
 	gnome-terminal -e "gdb -q -tui -x tools/gdbinit_kernel"

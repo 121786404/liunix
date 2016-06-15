@@ -2,28 +2,31 @@
 #include <stdio.h>
 #include <string.h>
 #include <console.h>
-#include <kdebug.h>
 #include <picirq.h>
 #include <trap.h>
 #include <clock.h>
 #include <intr.h>
 #include <pmm.h>
-#include <kmonitor.h>
-void kern_init(void) __attribute__((noreturn));
 
+void kern_init(void) __attribute__((noreturn));
 
 
 void
 kern_init(void){
-    extern char edata[], end[];
-    memset(edata, 0, end - edata);
+    extern char etext, edata, end;
+    memset(&edata, 0, &end - &edata);
 
     cons_init();                // init the console
 
-    const char *message = "(THU.CST) os is loading ...";
+    const char *message = "liunix is loading ...";
     cprintf("%s\n\n", message);
 
-    print_kerninfo();
+    cprintf("Special kernel symbols:\n");
+    cprintf("  entry  0x%08x (phys)\n", kern_init);
+    cprintf("  etext  0x%08x (phys)\n", &etext);
+    cprintf("  edata  0x%08x (phys)\n", &edata);
+    cprintf("  end    0x%08x (phys)\n", &end);
+    cprintf("Kernel executable memory footprint: %dKB\n", (&end - (char*)kern_init + 1023)/1024);
 
     pmm_init();                 // init physical memory management
 
@@ -40,9 +43,4 @@ kern_init(void){
     /* do nothing */
     while (1);
 }
-
-
-
-
-
 
