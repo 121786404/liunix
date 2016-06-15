@@ -13,6 +13,10 @@ void kern_init(void) __attribute__((noreturn));
 
 void
 kern_init(void){
+
+    /*
+    我们并没有实现elf的加载器，因此需要手动的将bss清零
+    */
     extern char etext, edata, end;
     memset(&edata, 0, &end - &edata);
 

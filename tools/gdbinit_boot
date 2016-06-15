@@ -1,7 +1,9 @@
-file boot/bootblock.o
+file bin/bootblock.o
 target remote :1234
 #x /i $cs*16+$eip
+#break bootasm.S:68
 break bootmain
+p /x *(struct elfhdr *)0x10000
 c
 
 #set confirm off

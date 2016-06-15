@@ -34,8 +34,10 @@ link:
 	$(LD) $(LDFLAGS) -N -e start -Ttext 0x7C00 boot/bootasm.o boot/bootmain.o -o bin/bootblock.o
 	objdump -t bin/bootblock.o | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > bin/bootblock.sym
 	objdump -S bin/bootblock.o > bin/bootblock.asm
+	readelf -a bin/bootblock.o > bin/bootblock_elf.txt
 	$(LD) $(LDFLAGS) -T tools/kernel.ld $(KERNEL_OBJECTS) $(LIB_OBJECTS) -o bin/kernel
 	objdump -S bin/kernel > bin/kernel.asm
+	readelf -a bin/kernel > bin/kernel_elf.txt
 
 .PHONY:clean
 clean:
