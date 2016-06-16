@@ -8,8 +8,10 @@
 *.img
 *.asm
 *.d
-bootblock
+
 
 
 si/*
 bin/*
+tool/sign
+tool/vector

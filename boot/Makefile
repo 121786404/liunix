@@ -26,12 +26,14 @@ all: $(OBJECTS) link
 	$(CC) $(CFLAGS) $< -c -o $@
 
 link:
-	$(LD) $(LDFLAGS) -N -e start -Ttext 0x7C00 $(OBJECTS) -o bootblock.o
+	@mkdir -p $(BIN_DIR)
+	$(LD) $(LDFLAGS) -N -T boot.ld $(OBJECTS) -o bootblock.o
 	objdump -t bootblock.o | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(BIN_DIR)/bootblock.sym
 	objdump -S bootblock.o > $(BIN_DIR)/bootblock.asm
 	readelf -a bootblock.o > $(BIN_DIR)/bootblock.txt
+	objcopy -S -j .text -j.data -O binary bootblock.o $(BIN_DIR)/bootblock.out
 
 
 .PHONY:clean
 clean:
-	rm $(shell find . -name "*.[d|o]")
+	rm -f $(shell find . -name "*.[d|o]")

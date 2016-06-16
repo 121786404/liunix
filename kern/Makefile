@@ -28,6 +28,7 @@ all: $(OBJECTS) link
 	$(CC) $(CFLAGS) $< -c -o $@
 
 link:
+	@mkdir -p $(BIN_DIR)
 	$(LD) $(LDFLAGS) -T kernel.ld $(OBJECTS) -o $(BIN_DIR)/kernel.elf
 	objdump -t $(BIN_DIR)/kernel.elf | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(BIN_DIR)/kernel.sym
 	objdump -S $(BIN_DIR)/kernel.elf > $(BIN_DIR)/kernel.asm
@@ -36,4 +37,4 @@ link:
 
 .PHONY:clean
 clean:
-	rm $(shell find . -name "*.[d|o]")
+	rm -f $(shell find . -name "*.[d|o]")
