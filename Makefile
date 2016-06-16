@@ -9,6 +9,8 @@ KERNEL_OBJECTS = $(patsubst %.c,%.o,$(patsubst %.S,%.o,$(KERNEL_SOURCES)))
 LIB_SOURCES = $(shell find libs -name "*.c")
 LIB_OBJECTS = $(patsubst %.c, %.o, $(LIB_SOURCES))
 
+HOSTCC		:= gcc
+HOSTCFLAGS	:= -g -Wall -O2 -D_FILE_OFFSET_BITS=64
 CC = gcc
 LD = ld
 
@@ -39,19 +41,24 @@ link:
 	objdump -S bin/kernel > bin/kernel.asm
 	readelf -a bin/kernel > bin/kernel_elf.txt
 
-.PHONY:clean
-clean:
-	rm -Rf bin $(shell find . -name *.asm -or -name *.o -or -name *.d -or -name *.sym -or -name *.out -or -name *.img)
 
 
 .PHONY:update_image
 update_image:
 	@mkdir -p bin
 	objcopy -S -R .note -R .comment -R .eh_frame -O binary bin/bootblock.o bin/bootblock.out
+	$(HOSTCC) $(HOSTCFLAGS) tools/sign.c -o tools/sign
+	$(HOSTCC) $(HOSTCFLAGS) tools/vector.c -o tools/vector
 	tools/sign bin/bootblock.out bin/bootblock
 	dd if=/dev/zero of=bin/liunix.img count=10000
 	dd if=bin/bootblock of=bin/liunix.img conv=notrunc
 	dd if=bin/kernel of=bin/liunix.img seek=1 conv=notrunc
+.PHONY:clean
+clean:
+	rm -Rf bin
+	rm -f tools/sign tools/vector
+	@#rm -f $(shell find . -name *.asm -or -name *.o -or -name *.d -or -name *.sym -or -name *.out -or -name *.img)
+	rm -f $(shell find . -name *.o -or -name *.d)
 
 
 .PHONY:qemu
