@@ -15,3 +15,4 @@ si/*
 bin/*
 tool/sign
 tool/vector
+kern/tool/vector.S
