@@ -13,6 +13,6 @@
 
 si/*
 bin/*
-tool/sign
-tool/vector
-kern/tool/vector.S
+tools/sign
+tools/vector
+kern/trap/vectors.S
