@@ -13,7 +13,9 @@ OBJECTS = $(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SOURCES)))
 CC = gcc
 LD = ld
 
-CFLAGS := -c -Wall -MD -m32 -ggdb -gstabs -nostdinc -fno-builtin -fno-stack-protector -Os
+# -fdump-tree-ssa-graph
+
+CFLAGS := -c -Wall -fdump-rtl-expand -MD -m32 -ggdb -gstabs -nostdinc -fno-builtin -fno-stack-protector
 INCLUDE	+= . ../inc libs debug driver mm trap
 CFLAGS	+= $(addprefix -I,$(INCLUDE))
 LDFLAGS	= -m elf_i386 -nostdlib
@@ -34,7 +36,6 @@ link:
 	objdump -S $(BIN_DIR)/kernel.elf > $(BIN_DIR)/kernel.asm
 	readelf -a $(BIN_DIR)/kernel.elf > $(BIN_DIR)/kernel.txt
 
-
 .PHONY:clean
 clean:
-	rm -f $(shell find . -name "*.[d|o]")
+	find . -name "*.o" -o -name "*.d" -o -name "*.expand" | xargs rm -f

@@ -14,6 +14,24 @@ subdirs:
 	for n in $(SUBDIRS); do $(MAKE) -C $$n || exit 1; done
 
 
+EGYPT_OMITS:= --omit \
+								"memmove,memcpy,memcmp,\
+								strcpy,strncpy,strncmp,strcmp,strlen,strnlen,strfind,strtol,strchr, \
+								cprintf,snprintf,vsnprintf,sprintputch,vprintfmt"
+
+cg: image
+	find kern -name '*.expand'| sort | xargs -r tools/egypt $(EGYPT_OMITS) > bin/callgraph.dot
+	dot bin/callgraph.dot -Grankdir=LR -Tsvg -o bin/callgraph.svg
+
+cg2:
+	@#tools/callgraph -f kern_init -o bin
+	cflow -b -m kern_init ./kern/init/init.c -o bin/callgraph.txt
+	@#cat bin/callgraph.txt | tools/tree2dotx 2>/dev/null > bin/callgraph.dot
+	cat bin/callgraph.txt | tools/tree2dotx > bin/callgraph.dot
+	dot bin/callgraph.dot -Tsvg -o bin/callgraph.svg
+	@#cflow -b -m kern_init ./kern/init/init.c | tools/tree2dotx 2>/dev/null | dot -Tsvg -o ./bin/callgraph.svg
+
+
 .PHONY:clean
 clean:
 	rm -Rf bin

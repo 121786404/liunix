@@ -1,5 +1,5 @@
+dir boot kern
 file bin/kernel.elf
-cd kern
 target remote :1234
 b kern_init
 c
