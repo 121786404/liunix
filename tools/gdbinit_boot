@@ -1,4 +1,5 @@
 file boot/bootblock.o
+cd boot
 target remote :1234
 #x /i $cs*16+$eip
 #break bootasm.S:68
