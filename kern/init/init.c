@@ -2,33 +2,29 @@
 #include <stdio.h>
 #include <string.h>
 #include <console.h>
+#include <kdebug.h>
 #include <picirq.h>
 #include <trap.h>
 #include <clock.h>
 #include <intr.h>
 #include <pmm.h>
 
-void kern_init(void) __attribute__((noreturn));
+int kern_init(void) __attribute__((noreturn));
 
 
-void
+int
 kern_init(void){
 
-    /*
-    我们并没有实现elf的加载器，因此需要手动的将bss清零
-    */
-    extern char etext, edata, end;
-    memset(&edata, 0, &end - &edata);
+    extern char edata[], end[];
+    memset(edata, 0, end - edata);
 
     cons_init();                // init the console
 
-    cprintf("%s\n\n", "liunix is loading ...");
-    cprintf("Special kernel symbols:\n");
-    cprintf("  entry  0x%08x (phys)\n", kern_init);
-    cprintf("  etext  0x%08x (phys)\n", &etext);
-    cprintf("  edata  0x%08x (phys)\n", &edata);
-    cprintf("  end    0x%08x (phys)\n", &end);
-    cprintf("Kernel executable memory footprint: %dKB\n\n", (&end - (char*)kern_init + 1023)/1024);
+    const char *message = "(THU.CST) os is loading ...";
+    cprintf("%s\n\n", message);
+
+    print_kerninfo();
+
 
     pmm_init();                 // init physical memory management
 

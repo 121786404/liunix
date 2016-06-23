@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <console.h>
-#include <string.h>
+#include <kdebug.h>
 #define TICK_NUM 100
 
 static void print_ticks() {
