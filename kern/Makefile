@@ -16,7 +16,7 @@ LD = ld
 # -fdump-tree-ssa-graph
 
 CFLAGS := -c -Wall -fdump-rtl-expand -MD -m32 -ggdb -gstabs -nostdinc -fno-builtin -fno-stack-protector
-INCLUDE	+= . ../inc libs debug driver mm trap sync
+INCLUDE	+= . ../inc libs debug driver mm trap sync fs
 CFLAGS	+= $(addprefix -I,$(INCLUDE))
 LDFLAGS	= -m elf_i386 -nostdlib -Tkernel.ld -Map kernel.map
 
