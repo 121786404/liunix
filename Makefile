@@ -15,7 +15,7 @@ subdirs:
 	for n in $(SUBDIRS); do $(MAKE) -C $$n || exit 1; done
 
 
-RTL2DOT_IGNORE:= "client_send|cprintf|common_*"
+RTL2DOT_IGNORE:= "cprintf"
 RTL2DOT_OPT:= --root kern_init --ignore $(RTL2DOT_IGNORE) --local
 cg:
 	find kern -name '*.expand'| sort | xargs -r tools/rtl2dot.py $(RTL2DOT_OPT) | dot -Gsize=8.5,11 -Grankdir=LR -Tsvg -o bin/callgraph.svg

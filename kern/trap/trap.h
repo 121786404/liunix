@@ -54,16 +54,16 @@ struct pushregs {
 };
 
 struct trapframe {
-    struct pushregs tf_regs;
-    uint16_t tf_gs;
+    struct pushregs tf_regs;  // trapentry.S : pushal
+    uint16_t tf_gs;            // trapentry.S : pushl %gs
     uint16_t tf_padding0;
-    uint16_t tf_fs;
+    uint16_t tf_fs;           // trapentry.S : pushl %fs
     uint16_t tf_padding1;
-    uint16_t tf_es;
+    uint16_t tf_es;           // trapentry.S : pushl %es
     uint16_t tf_padding2;
-    uint16_t tf_ds;
+    uint16_t tf_ds;           // trapentry.S : pushl %ds
     uint16_t tf_padding3;
-    uint32_t tf_trapno;
+    uint32_t tf_trapno;      // vectors.S  
     /* below here defined by x86 hardware */
     uint32_t tf_err;
     uintptr_t tf_eip;

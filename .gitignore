@@ -9,7 +9,7 @@
 *.asm
 *.d
 *.expand
-
+*.map
 
 si/*
 bin/*

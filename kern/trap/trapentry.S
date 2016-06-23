@@ -10,6 +10,8 @@ __alltraps:
     pushl %es
     pushl %fs
     pushl %gs
+
+    # Push EAX, ECX, EDX, EBX, original ESP, EBP, ESI, and EDI
     pushal
 
     # load GD_KDATA into %ds and %es to set up data segments for kernel
