@@ -1,7 +1,8 @@
+dir boot
 file boot/bootblock.o
-dir boot kern
 target remote :1234
 #x /i $cs*16+$eip
+#x /i $pc
 #break bootasm.S:68
 break *0x7c00
 #break bootmain

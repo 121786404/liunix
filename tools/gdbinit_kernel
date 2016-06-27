@@ -1,5 +1,5 @@
-dir boot kern
+dir kern
 file bin/kernel.elf
 target remote :1234
-b kern_init
+b check_boot_pgdir
 c
