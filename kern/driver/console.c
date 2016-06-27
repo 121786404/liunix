@@ -111,12 +111,6 @@ serial_init(void) {
     }
 }
 
-/*
-* 读I/O端口地址0x379，等待并口准备好；
-* 向I/O端口地址0x378发出要输出的字符；
-* 向I/O端口地址0x37A发出控制命令，让并口处理要输出的字符。
-*/
-
 static void
 lpt_putc_sub(int c) {
     int i;
@@ -141,11 +135,6 @@ lpt_putc(int c) {
     }
 }
 
-/*
-* 1.写I/O端口地址0x3d4，读I/O端口地址0x3d5，获得当前光标位置；
-* 2.在光标的下一位置的显存地址空间上写字符，格式是黑色背景/白色字符;
-* 3.设置当前光标位置为下一位置。
-*/
 /* cga_putc - print character to console */
 static void
 cga_putc(int c) {
@@ -188,12 +177,6 @@ cga_putc(int c) {
     outb(addr_6845 + 1, crt_pos);
 }
 
-/*
-* 执行inb指令读取串口的I/O地址（COM1 + COM_LSR）的值
-* 如果发现发现读出的值代表串口忙，则空转一小会;
-* 如果发现发现读出的值代表串口空闲，
-* 则执行outb指令把字符写到串口的I/O地址（COM1 + COM_TX）
-*/
 static void
 serial_putc_sub(int c) {
     int i;
@@ -445,9 +428,9 @@ cons_putc(int c) {
     bool intr_flag;
     local_intr_save(intr_flag);
     {
-    lpt_putc(c);
-    cga_putc(c);
-    serial_putc(c);
+        lpt_putc(c);
+        cga_putc(c);
+        serial_putc(c);
     }
     local_intr_restore(intr_flag);
 }
@@ -462,18 +445,18 @@ cons_getc(void) {
     bool intr_flag;
     local_intr_save(intr_flag);
     {
-    // poll for any pending input characters,
-    // so that this function works even when interrupts are disabled
-    // (e.g., when called from the kernel monitor).
-    serial_intr();
-    kbd_intr();
+        // poll for any pending input characters,
+        // so that this function works even when interrupts are disabled
+        // (e.g., when called from the kernel monitor).
+        serial_intr();
+        kbd_intr();
 
-    // grab the next character from the input buffer.
-    if (cons.rpos != cons.wpos) {
-        c = cons.buf[cons.rpos ++];
-        if (cons.rpos == CONSBUFSIZE) {
-            cons.rpos = 0;
-        }
+        // grab the next character from the input buffer.
+        if (cons.rpos != cons.wpos) {
+            c = cons.buf[cons.rpos ++];
+            if (cons.rpos == CONSBUFSIZE) {
+                cons.rpos = 0;
+            }
         }
     }
     local_intr_restore(intr_flag);

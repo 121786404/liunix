@@ -11,6 +11,7 @@
 #include <vmm.h>
 #include <ide.h>
 #include <swap.h>
+#include <proc.h>
 
 int kern_init(void) __attribute__((noreturn));
 
@@ -35,6 +36,7 @@ kern_init(void){
     idt_init();                 // init interrupt descriptor table
 
     vmm_init();                 // init virtual memory management
+    proc_init();                // init process table
     ide_init();                 // init ide devices
     swap_init();                // init swap
     clock_init();               // init clock interrupt
@@ -42,9 +44,9 @@ kern_init(void){
 
     //LAB1: CAHLLENGE 1 If you try to do it, uncomment lab1_switch_test()
     // user/kernel mode switch test
-
-
-    /* do nothing */
-    while (1);
+    cpu_idle();                 // run idle process
 }
+
+
+
 

@@ -33,7 +33,6 @@ void
 clock_init(void) {
     // set 8253 timer-chip
     outb(TIMER_MODE, TIMER_SEL0 | TIMER_RATEGEN | TIMER_16BIT);
-    //设置时钟每秒中断100次
     outb(IO_TIMER1, TIMER_DIV(100) % 256);
     outb(IO_TIMER1, TIMER_DIV(100) / 256);
 

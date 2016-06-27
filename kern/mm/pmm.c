@@ -10,6 +10,7 @@
 #include <error.h>
 #include <swap.h>
 #include <vmm.h>
+#include <kmalloc.h>
 
 /* *
  * Task State Segment:
@@ -348,6 +349,8 @@ pmm_init(void) {
     check_boot_pgdir();
 
     print_pgdir();
+    
+    kmalloc_init();
 
 }
 
@@ -679,26 +682,4 @@ print_pgdir(void) {
         }
     }
     cprintf("--------------------- END ---------------------\n");
-}
-
-void *
-kmalloc(size_t n) {
-    void * ptr=NULL;
-    struct Page *base=NULL;
-    assert(n > 0 && n < 1024*0124);
-    int num_pages=(n+PGSIZE-1)/PGSIZE;
-    base = alloc_pages(num_pages);
-    assert(base != NULL);
-    ptr=page2kva(base);
-    return ptr;
-}
-
-void 
-kfree(void *ptr, size_t n) {
-    assert(n > 0 && n < 1024*0124);
-    assert(ptr != NULL);
-    struct Page *base=NULL;
-    int num_pages=(n+PGSIZE-1)/PGSIZE;
-    base = kva2page(ptr);
-    free_pages(base, num_pages);
 }

@@ -32,7 +32,7 @@ void
 pic_init(void) {
     did_init = 1;
 
-    //此时系统尚未初始化完毕，故屏蔽主从8259A的所有中断
+    // mask all interrupts
     outb(IO_PIC1 + 1, 0xFF);
     outb(IO_PIC2 + 1, 0xFF);
 

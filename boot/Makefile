@@ -35,4 +35,5 @@ link:
 
 .PHONY:clean
 clean:
-	rm -f $(shell find . -name "*.[d|o]")
+	rm -f *.out *.sym *.asm *.map
+	find . -name "*.o" -o -name "*.d" -o -name "*.expand" | xargs rm -f

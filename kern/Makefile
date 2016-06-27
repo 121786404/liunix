@@ -16,7 +16,7 @@ LD = ld
 # -fdump-tree-ssa-graph
 
 CFLAGS := -c -Wall -fdump-rtl-expand -MD -m32 -ggdb -gstabs -nostdinc -fno-builtin -fno-stack-protector
-INCLUDE	+= . ../inc libs debug driver mm trap sync fs
+INCLUDE	+= . ../inc debug driver fs libs mm process schedule sync trap
 CFLAGS	+= $(addprefix -I,$(INCLUDE))
 LDFLAGS	= -m elf_i386 -nostdlib -Tkernel.ld -Map kernel.map
 
@@ -38,4 +38,5 @@ link:
 
 .PHONY:clean
 clean:
+	rm -f *.out *.sym *.asm *.map
 	find . -name "*.o" -o -name "*.d" -o -name "*.expand" | xargs rm -f

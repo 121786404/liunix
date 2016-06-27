@@ -100,7 +100,8 @@ struct e820map {
 struct Page {
     int ref;                        // page frame's reference counter
     uint32_t flags;                 // array of flags that describe the status of the page frame
-    unsigned int property;          // the num of free block, used in first fit pm manager
+    unsigned int property;          // used in buddy system, stores the order (the X in 2^X) of the continuous memory block
+    int zone_num;                   // used in buddy system, the No. of zone which the page belongs to
     list_entry_t page_link;         // free list link
     list_entry_t pra_page_link;     // used for pra (page replace algorithm)
     uintptr_t pra_vaddr;            // used for pra (page replace algorithm)
@@ -126,6 +127,12 @@ typedef struct {
     list_entry_t free_list;         // the list header
     unsigned int nr_free;           // # of free pages in this free list
 } free_area_t;
+
+/* for slab style kmalloc */
+#define PG_slab                     2       // page frame is included in a slab
+#define SetPageSlab(page)           set_bit(PG_slab, &((page)->flags))
+#define ClearPageSlab(page)         clear_bit(PG_slab, &((page)->flags))
+#define PageSlab(page)              test_bit(PG_slab, &((page)->flags))
 
 #endif /* !__ASSEMBLER__ */
 

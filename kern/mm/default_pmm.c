@@ -65,11 +65,6 @@ default_init(void) {
     nr_free = 0;
 }
 
-/*
-而init_memmap函数则是把空闲物理页对应的Page结构中的flags
-和引用计数ref清零，并加到free_area.free_list指向的双向列表中，
-为将来的空闲页管理做好初始化准备工作。
-*/
 static void
 default_init_memmap(struct Page *base, size_t n) {
     assert(n > 0);
