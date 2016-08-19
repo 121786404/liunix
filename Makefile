@@ -37,11 +37,11 @@ qemu: image
 debug: image
 	qemu-system-i386 -S -s $(QEMUOPTS) &
 	sleep 2
-	gnome-terminal -e "cgdb -q -x tools/gdbinit_kernel"
+	gnome-terminal -e "ddd -q -x tools/gdbinit_kernel"
 
 
 .PHONY:debug_boot
 debug_boot: image
 	qemu-system-i386 -S -s -parallel stdio -hda bin/liunix.img -serial null &
 	sleep 2
-	gnome-terminal -e "cgdb -q -x tools/gdbinit_boot"
+	gnome-terminal -e "ddd -q -x tools/gdbinit_boot"
